@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/png" href="icon.png">
+  <title>ROADMAP - RED MEMORY</title>
+  <style>
+    /* 页面基础样式 */
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #1f1f1f, #000000);
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* 顶部图片容器 */
+    .header-image {
+      text-align: center;
+      margin-bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .header-image img {
+      height: 80px;
+      width: auto;
+      max-width: 80%;
+      object-fit: contain;
+    }
+
+    /* 项目容器 */
+    .container {
+      width: 80%;
+      max-width: 700px;
+      padding: 20px;
+      position: relative;
+    }
+
+    /* 竖线 */
+    .container::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background-color: #2ecc71;
+      transform: translateX(-50%);
+      z-index: 0;
+    }
+
+    /* 项目项样式 */
+    .project {
+      --connector-length: 90px;
+      --circle-size: 24px;
+
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      margin: 40px 0;
+      width: 100%;
+    }
+
+    .project .left,
+    .project .right {
+      padding: 15px;
+      width: calc((100% - var(--circle-size) - 2 * var(--connector-length)) / 2);
+      background: transparent;
+      border: none;
+    }
+
+    .project .left {
+      text-align: right;
+    }
+
+    .project .right {
+      text-align: left;
+    }
+
+    /* 中间圆形 */
+    .project .circle {
+      position: relative;
+      width: var(--circle-size);
+      height: var(--circle-size);
+      border-radius: 50%;
+      border: 2px solid #fff;
+      margin: 0 var(--connector-length);
+      flex-shrink: 0;
+    }
+
+    .project .circle::before,
+    .project .circle::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: var(--connector-length);
+      height: 2px;
+      background-color: #fff;
+      transform: translateY(-50%);
+    }
+
+    .project .circle::before {
+      left: calc(-1 * var(--connector-length));
+    }
+
+    .project .circle::after {
+      right: calc(-1 * var(--connector-length));
+    }
+
+    /* 状态颜色 */
+    .project[data-status="todo"] .circle {
+      background-color: #999999;
+    }
+
+    .project[data-status="progressing"] .circle {
+      background-color: #f1c40f;
+    }
+
+    .project[data-status="done"] .circle {
+      background-color: #2ecc71;
+    }
+
+    /* 左侧标题样式 */
+    .project .left h3 {
+      margin: 0;
+      color: #ffffff;
+    }
+
+    /* 左侧时间样式 */
+    .project .left time {
+      display: block;
+      margin-top: 8px;
+      color: #999999;
+      font-size: 0.9em;
+    }
+
+    /* 右侧描述样式 */
+    .project .right ul {
+      padding-left: 20px;
+      margin: 0;
+      color: #dddddd;
+      line-height: 1.5;
+      list-style-type: disc;
+      font-size: 12px
+    }
+
+    .project .right li {
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-image">
+    <img src="GameTitle.png" alt="Title" />
+  </div>
+  <div class="container" id="progressContainer">
+  </div>
+
+  <script>
+    // 项目数据
+    const projects = [
+      {
+        id: "progressing",
+        name: "progressing",
+        detail: ["1", "2"],
+        time_end: "2025-05-10",
+        status: "progressing"
+      },
+      {
+        id: "done",
+        name: "done",
+        detail: ["1"],
+        time_end: "2025-04-20",
+        status: "done"
+      },
+      {
+        id: "todo",
+        name: "todo",
+        detail: ["1", "2", "3"],
+        time_end: "2025-05-20",
+        status: "todo"
+      }
+    ];
+
+    // 渲染函数
+    function renderProjects(containerId, data) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      data.forEach(item => {
+        const proj = document.createElement('div');
+        proj.className = 'project';
+        proj.setAttribute('data-status', item.status);
+
+        // 左侧：标题 + 时间
+        const left = document.createElement('div');
+        left.className = 'left';
+        left.innerHTML = `
+          <h3>${item.name}</h3>
+          <time>${item.time_end}</time>
+        `;
+
+        // 中间圆形
+        const circle = document.createElement('div');
+        circle.className = 'circle';
+
+        // 右侧：描述列表
+        const right = document.createElement('div');
+        right.className = 'right';
+        const ul = document.createElement('ul');
+        item.detail.forEach(text => {
+          const li = document.createElement('li');
+          li.textContent = text;
+          ul.appendChild(li);
+        });
+        right.appendChild(ul);
+
+        proj.appendChild(left);
+        proj.appendChild(circle);
+        proj.appendChild(right);
+        container.appendChild(proj);
+      });
+    }
+
+    // 页面加载后渲染
+    window.addEventListener('DOMContentLoaded', () => {
+      renderProjects('progressContainer', projects);
+    });
+  </script>
+</body>
+</html>
