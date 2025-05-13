@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" type="image/png" href="icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ROADMAP - RED MEMORY</title>
   <style>
     /* 页面基础样式 */
@@ -13,19 +13,12 @@
       background: linear-gradient(to bottom, #1f1f1f, #000000);
       color: #fff;
       font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
     }
 
     /* 顶部图片容器 */
     .header-image {
       text-align: center;
-      margin-bottom: 20px;
-      width: 100%;
-      display: flex;
-      justify-content: center;
+      padding: 20px 0;
     }
 
     .header-image img {
@@ -35,46 +28,48 @@
       object-fit: contain;
     }
 
-    /* 项目容器 */
+    /* 容器 */
     .container {
+      position: relative;
       width: 80%;
       max-width: 700px;
-      padding: 20px;
-      position: relative;
+      margin: 0 auto;
+      padding: 20px 0;
     }
 
-    /* 竖线 */
-    .container::before {
-      content: '';
+    /* 中线容器 */
+    .timeline-line {
       position: absolute;
       left: 50%;
       top: 0;
-      bottom: 0;
       width: 2px;
-      background-color: #2ecc71;
+      height: 100%;
       transform: translateX(-50%);
+      background-color: #fff;
       z-index: 0;
+    }
+
+    /* 每段线的样式 */
+    .line-segment {
+      width: 2px;
+      margin: 0 auto;
     }
 
     /* 项目项样式 */
     .project {
-      --connector-length: 90px;
-      --circle-size: 24px;
-
       position: relative;
       z-index: 1;
       display: flex;
       align-items: center;
       margin: 40px 0;
-      width: 100%;
     }
 
     .project .left,
     .project .right {
+      width: 45%;
       padding: 15px;
-      width: calc((100% - var(--circle-size) - 2 * var(--connector-length)) / 2);
-      background: transparent;
-      border: none;
+      position: relative;
+      border-radius: 8px;
     }
 
     .project .left {
@@ -88,31 +83,14 @@
     /* 中间圆形 */
     .project .circle {
       position: relative;
-      width: var(--circle-size);
-      height: var(--circle-size);
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       border: 2px solid #fff;
-      margin: 0 var(--connector-length);
+      background-color: #999;
+      margin: 0 80px;
       flex-shrink: 0;
-    }
-
-    .project .circle::before,
-    .project .circle::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: var(--connector-length);
-      height: 2px;
-      background-color: #fff;
-      transform: translateY(-50%);
-    }
-
-    .project .circle::before {
-      left: calc(-1 * var(--connector-length));
-    }
-
-    .project .circle::after {
-      right: calc(-1 * var(--connector-length));
+      z-index: 1;
     }
 
     /* 状态颜色 */
@@ -149,51 +127,91 @@
       color: #dddddd;
       line-height: 1.5;
       list-style-type: disc;
-      font-size: 12px
+      font-size: 12px;
     }
 
     .project .right li {
       margin-bottom: 6px;
     }
+
+    /* 连接线样式 */
+    .project .left::after,
+    .project .right::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 80px;
+      height: 2px;
+      background-color: #fff;
+      z-index: 0;
+    }
+
+    .project .left::after {
+      left: 100%;
+      margin-left: 10px;
+    }
+
+    .project .right::after {
+      right: 100%;
+      margin-right: 10px;
+    }
   </style>
 </head>
+
 <body>
   <div class="header-image">
     <img src="GameTitle.png" alt="Title" />
   </div>
   <div class="container" id="progressContainer">
+    <div class="timeline-line" id="timelineLine"></div>
+    <!-- 项目将通过 JavaScript 动态插入 -->
   </div>
 
   <script>
+
     // 项目数据
     const projects = [
       {
-        id: "progressing",
-        name: "progressing",
-        detail: ["1", "2"],
-        time_end: "2025-05-10",
-        status: "progressing"
-      },
-      {
-        id: "done",
-        name: "done",
-        detail: ["1"],
-        time_end: "2025-04-20",
+        name: "角色控制器",
+        detail: ["模块化角色控制器", "移动模块", "输入模块", "FPV模块", "音效系统整合"],
+        time_end: "2024",
         status: "done"
       },
       {
-        id: "todo",
-        name: "todo",
-        detail: ["1", "2", "3"],
-        time_end: "2025-05-20",
-        status: "todo"
+        name: "AI",
+        detail: ["AI控制器", "AI移动模块", "AI动画模块", "AI寻路模块", "Ragdoll"],
+        time_end: "2025-01",
+        status: "done"
+      },
+      {
+        name: "可行性技术测试",
+        detail: ["LOD自动化生成测试", "角色面部表情动画测试", "角色躯干动画混合测试", "角色寻路测试", "关卡地形工作流"],
+        time_end: "2025-04",
+        status: "done"
+      },
+      {
+        name: "关卡地形工具集",
+        detail: ["DCC关卡导出插件", "引擎关卡导入插件"],
+        time_end: "2025-05",
+        status: "progressing"
       }
     ];
+
+    // 状态对应的颜色
+    const statusColors = {
+      todo: "#999999",
+      progressing: "#f1c40f",
+      done: "#2ecc71"
+    };
 
     // 渲染函数
     function renderProjects(containerId, data) {
       const container = document.getElementById(containerId);
+      const timelineLine = document.getElementById('timelineLine');
       container.innerHTML = '';
+      container.appendChild(timelineLine); // 重新添加中线容器
+
+      const projectElements = [];
 
       data.forEach(item => {
         const proj = document.createElement('div');
@@ -227,7 +245,47 @@
         proj.appendChild(circle);
         proj.appendChild(right);
         container.appendChild(proj);
+
+        projectElements.push(proj);
       });
+
+      // 等待渲染完成后计算位置
+      setTimeout(() => {
+        // 清除旧的线段
+        timelineLine.innerHTML = '';
+
+        const positions = projectElements.map(proj => {
+          const circle = proj.querySelector('.circle');
+          const rect = circle.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+          return rect.top + rect.height / 2 - containerRect.top;
+        });
+
+        // 添加顶部线段
+        const topSegment = document.createElement('div');
+        topSegment.className = 'line-segment';
+        topSegment.style.height = positions[0] + 'px';
+        topSegment.style.backgroundColor = statusColors[data[0].status];
+        timelineLine.appendChild(topSegment);
+
+        // 添加中间线段
+        for (let i = 0; i < positions.length - 1; i++) {
+          const segment = document.createElement('div');
+          segment.className = 'line-segment';
+          segment.style.height = (positions[i + 1] - positions[i]) + 'px';
+          segment.style.backgroundColor = statusColors[data[i + 1].status];
+          timelineLine.appendChild(segment);
+        }
+
+        // 添加底部线段
+        const containerHeight = container.offsetHeight;
+        const lastPosition = positions[positions.length - 1];
+        const bottomSegment = document.createElement('div');
+        bottomSegment.className = 'line-segment';
+        bottomSegment.style.height = (containerHeight - lastPosition) + 'px';
+        bottomSegment.style.backgroundColor = statusColors[data[data.length - 1].status];
+        timelineLine.appendChild(bottomSegment);
+      }, 0);
     }
 
     // 页面加载后渲染
@@ -236,4 +294,5 @@
     });
   </script>
 </body>
+
 </html>
